@@ -20,12 +20,7 @@ In order to change how torch binds to libtorch, you must uninstall and reinstall
 To install with any of these methods, after configuring your environment, you may either
 
 * `opam install torch`, or
-* build from source:
-```bash
-git clone https://github.com/janestreet/torch.git
-cd torch
-make all
-```
+* To build from source, see `building.sh`
 
 ### Option 1: OPAM switch (CPU only)
 
