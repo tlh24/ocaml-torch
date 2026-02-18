@@ -1,8 +1,10 @@
 open Core
 
-let iter_local list ~(f : 'a -> unit) =
+(*let iter_local list ~(f : 'a -> unit) =
   List.fold__local__global list ~init:() ~f:(fun () x -> f x)
-;;
+;;*)
+let iter_local list ~(f : 'a -> unit) =
+  List.fold list ~init:() ~f:(fun () x -> f x)
 
 let rec iter2_local_exn a b ~f =
   match a, b with
@@ -14,7 +16,7 @@ let rec iter2_local_exn a b ~f =
 ;;
 
 let map_local_input list ~(f : 'a -> 'b) =
-  List.fold_right__local__global list ~init:[] ~f:(fun x prev_list -> f x :: prev_list)
+  List.fold_right list ~init:[] ~f:(fun x prev_list -> f x :: prev_list)
 ;;
 
 let hd_exn list =
@@ -25,12 +27,12 @@ let hd_exn list =
 
 let init_local num_items ~(f : int -> 'a) : 'a List.t =
   let idxs = List.range 0 num_items in
-  List.fold_right__global__local idxs ~init:[] ~f:(fun idx prev_list ->
+  List.fold_right idxs ~init:[] ~f:(fun idx prev_list ->
     f idx :: prev_list)
 ;;
 
 let unzip_local (l : ('a * 'b) list) : 'a list * 'b list =
-  List.fold_right__local__local l ~init:([], []) ~f:(fun (a, b) (a_list, b_list) ->
+  List.fold_right l ~init:([], []) ~f:(fun (a, b) (a_list, b_list) ->
     a :: a_list, b :: b_list)
 ;;
 

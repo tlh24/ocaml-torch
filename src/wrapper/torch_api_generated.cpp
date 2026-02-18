@@ -778,9 +778,9 @@ raw_tensor atg__cslt_compress(gc_tensor input) {
   )
 }
 
-raw_tensor atg__cslt_sparse_mm(gc_tensor compressed_A, gc_tensor dense_B, gc_tensor bias, gc_tensor alpha, int out_dtype, int transpose_result, int64_t alg_id, int64_t split_k, int split_k_one_kernel) {
+raw_tensor atg__cslt_sparse_mm(gc_tensor compressed_A, gc_tensor dense_B, gc_tensor bias, gc_tensor alpha, int out_dtype, int transpose_result, int64_t alg_id, int64_t split_k, int64_t split_k_mode) {
   PROTECT(
-    torch::Tensor results__ = torch::_cslt_sparse_mm(tensor_from_ocaml(compressed_A), tensor_from_ocaml(dense_B), bias ? std::make_optional(tensor_from_ocaml(bias)) : std::nullopt, alpha ? std::make_optional(tensor_from_ocaml(alpha)) : std::nullopt, torch::ScalarType(out_dtype), (bool)transpose_result, alg_id, split_k, (bool)split_k_one_kernel);
+    torch::Tensor results__ = torch::_cslt_sparse_mm(tensor_from_ocaml(compressed_A), tensor_from_ocaml(dense_B), bias ? std::make_optional(tensor_from_ocaml(bias)) : std::nullopt, alpha ? std::make_optional(tensor_from_ocaml(alpha)) : std::nullopt, torch::ScalarType(out_dtype), (bool)transpose_result, alg_id, split_k, split_k_mode);
     return tensor_to_ocaml(results__);
   )
 }
@@ -847,6 +847,15 @@ void atg__ctc_loss_tensor_out(raw_tensor *out__, gc_tensor out0, gc_tensor out1,
     auto results__ = torch::_ctc_loss_out(out0_local, out1_local, tensor_from_ocaml(log_probs), tensor_from_ocaml(targets), tensor_from_ocaml(input_lengths), tensor_from_ocaml(target_lengths), blank, (bool)zero_infinity);
     out__[0] = tensor_to_ocaml(std::get<0>(results__));
     out__[1] = tensor_to_ocaml(std::get<1>(results__));
+  )
+}
+
+void atg__cudnn_attention_backward(raw_tensor *out__, gc_tensor grad_out, gc_tensor query, gc_tensor key, gc_tensor value, gc_tensor out, gc_tensor logsumexp, gc_tensor philox_seed, gc_tensor philox_offset, gc_tensor attn_bias, gc_tensor cum_seq_q, gc_tensor cum_seq_k, int64_t max_q, int64_t max_k, double dropout_p, int is_causal, double scale_v, int scale_null) {
+  PROTECT(
+    auto results__ = torch::_cudnn_attention_backward(tensor_from_ocaml(grad_out), tensor_from_ocaml(query), tensor_from_ocaml(key), tensor_from_ocaml(value), tensor_from_ocaml(out), tensor_from_ocaml(logsumexp), tensor_from_ocaml(philox_seed), tensor_from_ocaml(philox_offset), tensor_from_ocaml(attn_bias), tensor_from_ocaml(cum_seq_q), tensor_from_ocaml(cum_seq_k), max_q, max_k, dropout_p, (bool)is_causal, scale_null ? c10::nullopt : c10::optional<double>(scale_v));
+    out__[0] = tensor_to_ocaml(std::get<0>(results__));
+    out__[1] = tensor_to_ocaml(std::get<1>(results__));
+    out__[2] = tensor_to_ocaml(std::get<2>(results__));
   )
 }
 
@@ -1335,6 +1344,18 @@ void atg__fused_adagrad_(gc_tensor *self_data, int self_len, gc_tensor *grads_da
   )
 }
 
+void atg__fused_adagrad_tensor_lr_(gc_tensor *self_data, int self_len, gc_tensor *grads_data, int grads_len, gc_tensor *state_sums_data, int state_sums_len, gc_tensor *state_steps_data, int state_steps_len, gc_tensor lr, double lr_decay, double weight_decay, double eps, int maximize, gc_tensor grad_scale, gc_tensor found_inf) {
+  PROTECT(
+    torch::_fused_adagrad_(of_carray_tensor(self_data, self_len), of_carray_tensor(grads_data, grads_len), of_carray_tensor(state_sums_data, state_sums_len), of_carray_tensor(state_steps_data, state_steps_len), tensor_from_ocaml(lr), lr_decay, weight_decay, eps, (bool)maximize, grad_scale ? std::make_optional(tensor_from_ocaml(grad_scale)) : std::nullopt, found_inf ? std::make_optional(tensor_from_ocaml(found_inf)) : std::nullopt);
+  )
+}
+
+void atg__fused_adagrad_tensor_lr_out(gc_tensor *out_data, int out_len, gc_tensor *self_data, int self_len, gc_tensor *grads_data, int grads_len, gc_tensor *state_sums_data, int state_sums_len, gc_tensor *state_steps_data, int state_steps_len, gc_tensor lr, double lr_decay, double weight_decay, double eps, int maximize, gc_tensor grad_scale, gc_tensor found_inf) {
+  PROTECT(
+    torch::_fused_adagrad_out(of_carray_tensor(out_data, out_len), of_carray_tensor(self_data, self_len), of_carray_tensor(grads_data, grads_len), of_carray_tensor(state_sums_data, state_sums_len), of_carray_tensor(state_steps_data, state_steps_len), tensor_from_ocaml(lr), lr_decay, weight_decay, eps, (bool)maximize, grad_scale ? std::make_optional(tensor_from_ocaml(grad_scale)) : std::nullopt, found_inf ? std::make_optional(tensor_from_ocaml(found_inf)) : std::nullopt);
+  )
+}
+
 void atg__fused_adam(gc_tensor *out_data, int out_len, gc_tensor *self_data, int self_len, gc_tensor *grads_data, int grads_len, gc_tensor *exp_avgs_data, int exp_avgs_len, gc_tensor *exp_avg_sqs_data, int exp_avg_sqs_len, gc_tensor *max_exp_avg_sqs_data, int max_exp_avg_sqs_len, gc_tensor *state_steps_data, int state_steps_len, double lr, double beta1, double beta2, double weight_decay, double eps, int amsgrad, int maximize, gc_tensor grad_scale, gc_tensor found_inf) {
   PROTECT(
     torch::_fused_adam_out(of_carray_tensor(out_data, out_len), of_carray_tensor(self_data, self_len), of_carray_tensor(grads_data, grads_len), of_carray_tensor(exp_avgs_data, exp_avgs_len), of_carray_tensor(exp_avg_sqs_data, exp_avg_sqs_len), of_carray_tensor(max_exp_avg_sqs_data, max_exp_avg_sqs_len), of_carray_tensor(state_steps_data, state_steps_len), lr, beta1, beta2, weight_decay, eps, (bool)amsgrad, (bool)maximize, grad_scale ? std::make_optional(tensor_from_ocaml(grad_scale)) : std::nullopt, found_inf ? std::make_optional(tensor_from_ocaml(found_inf)) : std::nullopt);
@@ -1439,6 +1460,14 @@ void atg__fused_moving_avg_obs_fq_helper_out(raw_tensor *out__, gc_tensor out0, 
   )
 }
 
+void atg__fused_rms_norm(raw_tensor *out__, gc_tensor input, int64_t *normalized_shape_data, int normalized_shape_len, gc_tensor weight, double eps_v, int eps_null) {
+  PROTECT(
+    auto results__ = torch::_fused_rms_norm(tensor_from_ocaml(input), torch::IntArrayRef(normalized_shape_data, normalized_shape_len), weight ? std::make_optional(tensor_from_ocaml(weight)) : std::nullopt, eps_null ? c10::nullopt : c10::optional<double>(eps_v));
+    out__[0] = tensor_to_ocaml(std::get<0>(results__));
+    out__[1] = tensor_to_ocaml(std::get<1>(results__));
+  )
+}
+
 int64_t atg__fused_sdp_choice(gc_tensor query, gc_tensor key, gc_tensor value, gc_tensor attn_mask, double dropout_p, int is_causal, double scale_v, int scale_null, int enable_gqa) {
   PROTECT(
     return torch::_fused_sdp_choice(tensor_from_ocaml(query), tensor_from_ocaml(key), tensor_from_ocaml(value), attn_mask ? std::make_optional(tensor_from_ocaml(attn_mask)) : std::nullopt, dropout_p, (bool)is_causal, scale_null ? c10::nullopt : c10::optional<double>(scale_v), (bool)enable_gqa);
@@ -1518,6 +1547,13 @@ raw_tensor atg__grid_sampler_2d_cpu_fallback_out(gc_tensor out, gc_tensor input,
   torch::Tensor out_local = tensor_from_ocaml(out);
   PROTECT(
     torch::Tensor results__ = torch::_grid_sampler_2d_cpu_fallback_out(out_local, tensor_from_ocaml(input), tensor_from_ocaml(grid), interpolation_mode, padding_mode, (bool)align_corners);
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg__grouped_mm(gc_tensor self, gc_tensor mat2, gc_tensor offs, gc_tensor bias, int out_dtype) {
+  PROTECT(
+    torch::Tensor results__ = torch::_grouped_mm(tensor_from_ocaml(self), tensor_from_ocaml(mat2), offs ? std::make_optional(tensor_from_ocaml(offs)) : std::nullopt, bias ? std::make_optional(tensor_from_ocaml(bias)) : std::nullopt, torch::ScalarType(out_dtype));
     return tensor_to_ocaml(results__);
   )
 }
@@ -2635,6 +2671,13 @@ raw_tensor atg__scaled_grouped_mm(gc_tensor self, gc_tensor mat2, gc_tensor scal
   )
 }
 
+raw_tensor atg__scaled_grouped_mm_v2(gc_tensor self, gc_tensor mat2, gc_tensor *scale_a_data, int scale_a_len, int64_t *recipe_a_data, int recipe_a_len, int64_t *swizzle_a_data, int swizzle_a_len, gc_tensor *scale_b_data, int scale_b_len, int64_t *recipe_b_data, int recipe_b_len, int64_t *swizzle_b_data, int swizzle_b_len, gc_tensor offs, gc_tensor bias, int out_dtype, int64_t *contraction_dim_data, int contraction_dim_len, int use_fast_accum) {
+  PROTECT(
+    torch::Tensor results__ = torch::_scaled_grouped_mm_v2(tensor_from_ocaml(self), tensor_from_ocaml(mat2), of_carray_tensor(scale_a_data, scale_a_len), torch::IntArrayRef(recipe_a_data, recipe_a_len), torch::IntArrayRef(swizzle_a_data, swizzle_a_len), of_carray_tensor(scale_b_data, scale_b_len), torch::IntArrayRef(recipe_b_data, recipe_b_len), torch::IntArrayRef(swizzle_b_data, swizzle_b_len), offs ? std::make_optional(tensor_from_ocaml(offs)) : std::nullopt, bias ? std::make_optional(tensor_from_ocaml(bias)) : std::nullopt, torch::ScalarType(out_dtype), torch::IntArrayRef(contraction_dim_data, contraction_dim_len), (bool)use_fast_accum);
+    return tensor_to_ocaml(results__);
+  )
+}
+
 raw_tensor atg__scaled_mm(gc_tensor self, gc_tensor mat2, gc_tensor scale_a, gc_tensor scale_b, gc_tensor bias, gc_tensor scale_result, int out_dtype, int use_fast_accum) {
   PROTECT(
     torch::Tensor results__ = torch::_scaled_mm(tensor_from_ocaml(self), tensor_from_ocaml(mat2), tensor_from_ocaml(scale_a), tensor_from_ocaml(scale_b), bias ? std::make_optional(tensor_from_ocaml(bias)) : std::nullopt, scale_result ? std::make_optional(tensor_from_ocaml(scale_result)) : std::nullopt, torch::ScalarType(out_dtype), (bool)use_fast_accum);
@@ -2646,6 +2689,21 @@ raw_tensor atg__scaled_mm_out(gc_tensor out, gc_tensor self, gc_tensor mat2, gc_
   torch::Tensor out_local = tensor_from_ocaml(out);
   PROTECT(
     torch::Tensor results__ = torch::_scaled_mm_out(out_local, tensor_from_ocaml(self), tensor_from_ocaml(mat2), tensor_from_ocaml(scale_a), tensor_from_ocaml(scale_b), bias ? std::make_optional(tensor_from_ocaml(bias)) : std::nullopt, scale_result ? std::make_optional(tensor_from_ocaml(scale_result)) : std::nullopt, torch::ScalarType(out_dtype), (bool)use_fast_accum);
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg__scaled_mm_v2(gc_tensor self, gc_tensor mat2, gc_tensor *scale_a_data, int scale_a_len, int64_t *recipe_a_data, int recipe_a_len, int64_t *swizzle_a_data, int swizzle_a_len, gc_tensor *scale_b_data, int scale_b_len, int64_t *recipe_b_data, int recipe_b_len, int64_t *swizzle_b_data, int swizzle_b_len, gc_tensor bias, int out_dtype, int64_t *contraction_dim_data, int contraction_dim_len, int use_fast_accum) {
+  PROTECT(
+    torch::Tensor results__ = torch::_scaled_mm_v2(tensor_from_ocaml(self), tensor_from_ocaml(mat2), of_carray_tensor(scale_a_data, scale_a_len), torch::IntArrayRef(recipe_a_data, recipe_a_len), torch::IntArrayRef(swizzle_a_data, swizzle_a_len), of_carray_tensor(scale_b_data, scale_b_len), torch::IntArrayRef(recipe_b_data, recipe_b_len), torch::IntArrayRef(swizzle_b_data, swizzle_b_len), bias ? std::make_optional(tensor_from_ocaml(bias)) : std::nullopt, torch::ScalarType(out_dtype), torch::IntArrayRef(contraction_dim_data, contraction_dim_len), (bool)use_fast_accum);
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg__scaled_mm_v2_out(gc_tensor out, gc_tensor self, gc_tensor mat2, gc_tensor *scale_a_data, int scale_a_len, int64_t *recipe_a_data, int recipe_a_len, int64_t *swizzle_a_data, int swizzle_a_len, gc_tensor *scale_b_data, int scale_b_len, int64_t *recipe_b_data, int recipe_b_len, int64_t *swizzle_b_data, int swizzle_b_len, gc_tensor bias, int out_dtype, int64_t *contraction_dim_data, int contraction_dim_len, int use_fast_accum) {
+  torch::Tensor out_local = tensor_from_ocaml(out);
+  PROTECT(
+    torch::Tensor results__ = torch::_scaled_mm_v2_out(out_local, tensor_from_ocaml(self), tensor_from_ocaml(mat2), of_carray_tensor(scale_a_data, scale_a_len), torch::IntArrayRef(recipe_a_data, recipe_a_len), torch::IntArrayRef(swizzle_a_data, swizzle_a_len), of_carray_tensor(scale_b_data, scale_b_len), torch::IntArrayRef(recipe_b_data, recipe_b_len), torch::IntArrayRef(swizzle_b_data, swizzle_b_len), bias ? std::make_optional(tensor_from_ocaml(bias)) : std::nullopt, torch::ScalarType(out_dtype), torch::IntArrayRef(contraction_dim_data, contraction_dim_len), (bool)use_fast_accum);
     return tensor_to_ocaml(results__);
   )
 }
@@ -3945,21 +4003,21 @@ void atg__validate_compressed_sparse_indices(int is_crow, gc_tensor compressed_i
   )
 }
 
-void atg__validate_sparse_bsc_tensor_args(gc_tensor ccol_indices, gc_tensor row_indices, gc_tensor values, int64_t *size_data, int size_len) {
+void atg__validate_sparse_bsc_tensor_args(gc_tensor ccol_indices, gc_tensor row_indices, gc_tensor values, int64_t *size_data, int size_len, int check_pinning) {
   PROTECT(
-    torch::_validate_sparse_bsc_tensor_args(tensor_from_ocaml(ccol_indices), tensor_from_ocaml(row_indices), tensor_from_ocaml(values), torch::IntArrayRef(size_data, size_len));
+    torch::_validate_sparse_bsc_tensor_args(tensor_from_ocaml(ccol_indices), tensor_from_ocaml(row_indices), tensor_from_ocaml(values), torch::IntArrayRef(size_data, size_len), (bool)check_pinning);
   )
 }
 
-void atg__validate_sparse_bsr_tensor_args(gc_tensor crow_indices, gc_tensor col_indices, gc_tensor values, int64_t *size_data, int size_len) {
+void atg__validate_sparse_bsr_tensor_args(gc_tensor crow_indices, gc_tensor col_indices, gc_tensor values, int64_t *size_data, int size_len, int check_pinning) {
   PROTECT(
-    torch::_validate_sparse_bsr_tensor_args(tensor_from_ocaml(crow_indices), tensor_from_ocaml(col_indices), tensor_from_ocaml(values), torch::IntArrayRef(size_data, size_len));
+    torch::_validate_sparse_bsr_tensor_args(tensor_from_ocaml(crow_indices), tensor_from_ocaml(col_indices), tensor_from_ocaml(values), torch::IntArrayRef(size_data, size_len), (bool)check_pinning);
   )
 }
 
-void atg__validate_sparse_csc_tensor_args(gc_tensor ccol_indices, gc_tensor row_indices, gc_tensor values, int64_t *size_data, int size_len) {
+void atg__validate_sparse_csc_tensor_args(gc_tensor ccol_indices, gc_tensor row_indices, gc_tensor values, int64_t *size_data, int size_len, int check_pinning) {
   PROTECT(
-    torch::_validate_sparse_csc_tensor_args(tensor_from_ocaml(ccol_indices), tensor_from_ocaml(row_indices), tensor_from_ocaml(values), torch::IntArrayRef(size_data, size_len));
+    torch::_validate_sparse_csc_tensor_args(tensor_from_ocaml(ccol_indices), tensor_from_ocaml(row_indices), tensor_from_ocaml(values), torch::IntArrayRef(size_data, size_len), (bool)check_pinning);
   )
 }
 
@@ -4002,6 +4060,13 @@ raw_tensor atg__weight_int4pack_mm(gc_tensor self, gc_tensor mat2, int64_t qGrou
 raw_tensor atg__weight_int4pack_mm_for_cpu(gc_tensor self, gc_tensor mat2, int64_t qGroupSize, gc_tensor qScaleAndZeros) {
   PROTECT(
     torch::Tensor results__ = torch::_weight_int4pack_mm_for_cpu(tensor_from_ocaml(self), tensor_from_ocaml(mat2), qGroupSize, tensor_from_ocaml(qScaleAndZeros));
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg__weight_int4pack_mm_with_scales_and_zeros(gc_tensor self, gc_tensor mat2, int64_t qGroupSize, gc_tensor qScale, gc_tensor qZeros) {
+  PROTECT(
+    torch::Tensor results__ = torch::_weight_int4pack_mm_with_scales_and_zeros(tensor_from_ocaml(self), tensor_from_ocaml(mat2), qGroupSize, tensor_from_ocaml(qScale), tensor_from_ocaml(qZeros));
     return tensor_to_ocaml(results__);
   )
 }
@@ -4423,6 +4488,21 @@ raw_tensor atg_addmm_(gc_tensor self, gc_tensor mat1, gc_tensor mat2, scalar bet
   torch::Tensor self_local = tensor_from_ocaml(self);
   PROTECT(
     torch::Tensor results__ = tensor_from_ocaml(self).addmm_(tensor_from_ocaml(mat1), tensor_from_ocaml(mat2), beta ? *beta : c10::Scalar{1} , alpha ? *alpha : c10::Scalar{1} );
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_addmm_dtype(gc_tensor self, gc_tensor mat1, gc_tensor mat2, int out_dtype, scalar beta, scalar alpha) {
+  PROTECT(
+    torch::Tensor results__ = torch::addmm(tensor_from_ocaml(self), tensor_from_ocaml(mat1), tensor_from_ocaml(mat2), torch::ScalarType(out_dtype), beta ? *beta : c10::Scalar{1} , alpha ? *alpha : c10::Scalar{1} );
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_addmm_dtype_out(gc_tensor out, gc_tensor self, gc_tensor mat1, gc_tensor mat2, int out_dtype, scalar beta, scalar alpha) {
+  torch::Tensor out_local = tensor_from_ocaml(out);
+  PROTECT(
+    torch::Tensor results__ = torch::addmm_out(out_local, tensor_from_ocaml(self), tensor_from_ocaml(mat1), tensor_from_ocaml(mat2), torch::ScalarType(out_dtype), beta ? *beta : c10::Scalar{1} , alpha ? *alpha : c10::Scalar{1} );
     return tensor_to_ocaml(results__);
   )
 }
@@ -5273,6 +5353,21 @@ raw_tensor atg_baddbmm_(gc_tensor self, gc_tensor batch1, gc_tensor batch2, scal
   )
 }
 
+raw_tensor atg_baddbmm_dtype(gc_tensor self, gc_tensor batch1, gc_tensor batch2, int out_dtype, scalar beta, scalar alpha) {
+  PROTECT(
+    torch::Tensor results__ = torch::baddbmm(tensor_from_ocaml(self), tensor_from_ocaml(batch1), tensor_from_ocaml(batch2), torch::ScalarType(out_dtype), beta ? *beta : c10::Scalar{1} , alpha ? *alpha : c10::Scalar{1} );
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_baddbmm_dtype_out(gc_tensor out, gc_tensor self, gc_tensor batch1, gc_tensor batch2, int out_dtype, scalar beta, scalar alpha) {
+  torch::Tensor out_local = tensor_from_ocaml(out);
+  PROTECT(
+    torch::Tensor results__ = torch::baddbmm_out(out_local, tensor_from_ocaml(self), tensor_from_ocaml(batch1), tensor_from_ocaml(batch2), torch::ScalarType(out_dtype), beta ? *beta : c10::Scalar{1} , alpha ? *alpha : c10::Scalar{1} );
+    return tensor_to_ocaml(results__);
+  )
+}
+
 raw_tensor atg_baddbmm_out(gc_tensor out, gc_tensor self, gc_tensor batch1, gc_tensor batch2, scalar beta, scalar alpha) {
   torch::Tensor out_local = tensor_from_ocaml(out);
   PROTECT(
@@ -5939,6 +6034,21 @@ raw_tensor atg_block_diag_out(gc_tensor out, gc_tensor *tensors_data, int tensor
 raw_tensor atg_bmm(gc_tensor self, gc_tensor mat2) {
   PROTECT(
     torch::Tensor results__ = torch::bmm(tensor_from_ocaml(self), tensor_from_ocaml(mat2));
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_bmm_dtype(gc_tensor self, gc_tensor mat2, int out_dtype) {
+  PROTECT(
+    torch::Tensor results__ = torch::bmm(tensor_from_ocaml(self), tensor_from_ocaml(mat2), torch::ScalarType(out_dtype));
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_bmm_dtype_out(gc_tensor out, gc_tensor self, gc_tensor mat2, int out_dtype) {
+  torch::Tensor out_local = tensor_from_ocaml(out);
+  PROTECT(
+    torch::Tensor results__ = torch::bmm_out(out_local, tensor_from_ocaml(self), tensor_from_ocaml(mat2), torch::ScalarType(out_dtype));
     return tensor_to_ocaml(results__);
   )
 }
@@ -8286,7 +8396,23 @@ raw_tensor atg_fbgemm_linear_fp16_weight(gc_tensor input, gc_tensor packed_weigh
 
 raw_tensor atg_fbgemm_linear_fp16_weight_fp32_activation(gc_tensor input, gc_tensor packed_weight, gc_tensor bias) {
   PROTECT(
-    torch::Tensor results__ = torch::fbgemm_linear_fp16_weight_fp32_activation(tensor_from_ocaml(input), tensor_from_ocaml(packed_weight), tensor_from_ocaml(bias));
+    torch::Tensor results__ = torch::fbgemm_linear_fp16_weight_fp32_activation(tensor_from_ocaml(input), tensor_from_ocaml(packed_weight), bias ? std::make_optional(tensor_from_ocaml(bias)) : std::nullopt);
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_fbgemm_linear_fp16_weight_fp32_activation_out(gc_tensor input, gc_tensor packed_weight, gc_tensor bias, gc_tensor output) {
+  torch::Tensor output_local = tensor_from_ocaml(output);
+  PROTECT(
+    torch::Tensor results__ = torch::fbgemm_linear_fp16_weight_fp32_activation(tensor_from_ocaml(input), tensor_from_ocaml(packed_weight), bias ? std::make_optional(tensor_from_ocaml(bias)) : std::nullopt, output_local);
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_fbgemm_linear_fp16_weight_out(gc_tensor input, gc_tensor packed_weight, gc_tensor bias, gc_tensor output) {
+  torch::Tensor output_local = tensor_from_ocaml(output);
+  PROTECT(
+    torch::Tensor results__ = torch::fbgemm_linear_fp16_weight(tensor_from_ocaml(input), tensor_from_ocaml(packed_weight), tensor_from_ocaml(bias), output_local);
     return tensor_to_ocaml(results__);
   )
 }
@@ -9861,6 +9987,21 @@ raw_tensor atg_hardtanh_out(gc_tensor out, gc_tensor self, scalar min_val, scala
   torch::Tensor out_local = tensor_from_ocaml(out);
   PROTECT(
     torch::Tensor results__ = torch::hardtanh_out(out_local, tensor_from_ocaml(self), min_val ? *min_val : c10::Scalar{-1} , max_val ? *max_val : c10::Scalar{1} );
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_hash_tensor(gc_tensor self, int64_t *dim_data, int dim_len, int keepdim, int64_t mode) {
+  PROTECT(
+    torch::Tensor results__ = torch::hash_tensor(tensor_from_ocaml(self), torch::IntArrayRef(dim_data, dim_len), (bool)keepdim, mode);
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_hash_tensor_out(gc_tensor out, gc_tensor self, int64_t *dim_data, int dim_len, int keepdim, int64_t mode) {
+  torch::Tensor out_local = tensor_from_ocaml(out);
+  PROTECT(
+    torch::Tensor results__ = torch::hash_tensor_out(out_local, tensor_from_ocaml(self), torch::IntArrayRef(dim_data, dim_len), (bool)keepdim, mode);
     return tensor_to_ocaml(results__);
   )
 }
@@ -13231,6 +13372,21 @@ raw_tensor atg_mm(gc_tensor self, gc_tensor mat2) {
   )
 }
 
+raw_tensor atg_mm_dtype(gc_tensor self, gc_tensor mat2, int out_dtype) {
+  PROTECT(
+    torch::Tensor results__ = torch::mm(tensor_from_ocaml(self), tensor_from_ocaml(mat2), torch::ScalarType(out_dtype));
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_mm_dtype_out(gc_tensor out, gc_tensor self, gc_tensor mat2, int out_dtype) {
+  torch::Tensor out_local = tensor_from_ocaml(out);
+  PROTECT(
+    torch::Tensor results__ = torch::mm_out(out_local, tensor_from_ocaml(self), tensor_from_ocaml(mat2), torch::ScalarType(out_dtype));
+    return tensor_to_ocaml(results__);
+  )
+}
+
 raw_tensor atg_mm_out(gc_tensor out, gc_tensor self, gc_tensor mat2) {
   torch::Tensor out_local = tensor_from_ocaml(out);
   PROTECT(
@@ -14991,6 +15147,21 @@ raw_tensor atg_randint_like_out(gc_tensor out, gc_tensor self, int64_t high) {
   torch::Tensor out_local = tensor_from_ocaml(out);
   PROTECT(
     torch::Tensor results__ = torch::randint_like_out(out_local, tensor_from_ocaml(self), high);
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_randint_like_tensor(gc_tensor self, gc_tensor high) {
+  PROTECT(
+    torch::Tensor results__ = torch::randint_like(tensor_from_ocaml(self), tensor_from_ocaml(high));
+    return tensor_to_ocaml(results__);
+  )
+}
+
+raw_tensor atg_randint_like_tensor_out(gc_tensor out, gc_tensor self, gc_tensor high) {
+  torch::Tensor out_local = tensor_from_ocaml(out);
+  PROTECT(
+    torch::Tensor results__ = torch::randint_like_out(out_local, tensor_from_ocaml(self), tensor_from_ocaml(high));
     return tensor_to_ocaml(results__);
   )
 }

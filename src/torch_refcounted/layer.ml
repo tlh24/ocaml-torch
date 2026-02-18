@@ -103,7 +103,7 @@ let conv_transpose_weight_bias
   ~use_bias
   =
   let w_init =
-    Option.value__local w_init ~default:(Var_store.Init.Normal { mean = 0.; stdev = 0.1 })
+    Option.value w_init ~default:(Var_store.Init.Normal { mean = 0.; stdev = 0.1 })
   in
   let dilated_ksize = dilate_ksize ~ksize ~dilation in
   let weight =
@@ -544,7 +544,7 @@ let of_fn_ apply_with_training = { apply_with_training }
 let sequential t_list =
   let apply xs =
     Tensor.with_rc_scope_tensor (fun () ->
-      List.fold__local__local t_list ~init:xs ~f:(fun acc t -> t.apply acc))
+      List.fold t_list ~init:xs ~f:(fun acc t -> t.apply acc))
   in
   { apply }
 ;;
@@ -552,7 +552,7 @@ let sequential t_list =
 let sequential_ t_list =
   let apply_with_training xs ~is_training =
     Tensor.with_rc_scope_tensor (fun () ->
-      List.fold__local__local t_list ~init:xs ~f:(fun acc t ->
+      List.fold t_list ~init:xs ~f:(fun acc t ->
         t.apply_with_training acc ~is_training))
   in
   { apply_with_training }

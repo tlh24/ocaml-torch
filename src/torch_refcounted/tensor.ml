@@ -75,7 +75,7 @@ let gen
   =
   let t = f ~size ~options:(kind, device) in
   let t =
-    Option.value_map__local
+    Option.value_map
       scale
       ~f:(fun scale ->
         let scale = float_vec [ Float.globalize scale ] ~device in
@@ -451,7 +451,7 @@ let to_list t =
     | [] -> failwith "scalar tensor"
     | size :: _ -> size
   in
-  Base.List.fold__global__local
+  Base.List.fold
     (List.range 0 size |> List.rev)
     ~init:[]
     ~f:(fun prev_list idx -> get t idx :: prev_list)

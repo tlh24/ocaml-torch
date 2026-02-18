@@ -1,4 +1,4 @@
-(* Automatically generate the C++ -> C -> ocaml bindings. This takes as input the
+	(* Automatically generate the C++ -> C -> ocaml bindings. This takes as input the
    Descriptions.yaml file that gets generated when building PyTorch from source. *)
 open Base
 open Stdio
@@ -126,7 +126,7 @@ let append_local_mode_if_refcounted
   if refcounted
   then (
     let text = if wrap_input_in_parens then "(" ^ text ^ ")" else text in
-    let text = text ^ " @ local" in
+(*     let text = text ^ " @ local" in *)
     if wrap_output_in_parens then "(" ^ text ^ ")" else text)
   else text
 ;;
