@@ -1,5 +1,5 @@
 # Hopefully-helfpul instructions for building ocaml-torch library locally.
-# tested February 17 2026 Debian 13 (Trixie) and 14 (Forky)
+# Tested February 17 2026 Debian 13 (Trixie) and 14 (Forky)
 
 # download libtorch from the pytorch website.
 wget https://download.pytorch.org/libtorch/cu130/libtorch-shared-with-deps-2.10.0%2Bcu130.zip
