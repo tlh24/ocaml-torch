@@ -1,4 +1,4 @@
-# Hopefully-helfpul instructions for building this library locally.
+# Hopefully-helfpul instructions for building ocaml-torch library locally.
 # tested February 17 2026 Debian 13 (Trixie) and 14 (Forky)
 
 # download libtorch from the pytorch website.
@@ -16,8 +16,9 @@ opam install dune stdio core ppx_jane patdiff ctypes-foreign npy cmdliner yaml p
 dune build src/gen_bindings/gen.exe
 cd _build/default/src/gen_bindings/
 
-# If you are using a different version of Pytorch, you'll need to compile that from source to generate Declarations.yaml
-# Some files below were in the git tree, but have been removed so they can be auto-generated.
+# If you are not using Pytorch release 2.10, you'll need to compile Pytorch from source to generate Declarations.yaml
+# (The file in the tree was copied from the build tree of pytorch)
+# Below commands regenerate wrapper and stub files from this Declarations.yaml.
 ./gen.exe -declarations ../../../../third_party/pytorch/Declarations-2.10.yaml -bindings -wrappers -refcounted false
 cp *.cpp ../../../../src/wrapper/
 cp *.h ../../../../src/wrapper/
@@ -32,6 +33,7 @@ cp wrapper_generated_refcounted_intf.ml ../../../../src/wrapper_refcounted/
 cp wrapper_generated_refcounted.ml ../../../../src/wrapper_refcounted/
 cp torch_refcounted_bindings_generated.ml ../../../../src/bindings_refcounted/
 
+cd ../../../..
 dune build -p torch @install
 dune install
 
